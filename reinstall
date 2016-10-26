@@ -4,5 +4,11 @@
 rm -r /home/chris/.local/share/kwin/tabbox/thumbnail_grid/
 # plasmapkg2 -t windowswitcher -r package
 plasmapkg2 -t windowswitcher -i package
-# killall plasmashell
-# kstart plasmashell
+
+# Tell KWin to reload the task switcher.
+# https://github.com/KDE/kwin/blob/master/kcmkwin/kwintabbox/main.cpp#L375
+# Note there's a slot connected to the reloadConfig() signal that calls reconfigure()
+# qdbus org.kde.KWin /KWin reconfigure # Doesn't work
+
+# Restart KWin
+kwin_x11 --replace & disown
