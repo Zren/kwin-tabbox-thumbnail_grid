@@ -143,8 +143,7 @@ KWin.Switcher {
                     id: highlightItem
                     imagePath: "widgets/viewitem"
                     prefix: "hover"
-                    width: thumbnailGridView.cellWidth
-                    height: thumbnailGridView.cellHeight
+                    anchors.fill: thumbnailGridView.currentItem
                 }
 
                 // property int selectedIndex: -1
