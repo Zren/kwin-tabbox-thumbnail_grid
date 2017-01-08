@@ -60,7 +60,7 @@ KWin.Switcher {
                 },
                 State {
                     name: "2cols"
-                    when: dialogMainItem.maxCount == 3 || dialogMainItem.maxCount == 4
+                    when: dialogMainItem.maxCount == 4
                     PropertyChanges {
                         target: dialogMainItem
                         maxGridColumnsFromLayout: 2
@@ -68,7 +68,7 @@ KWin.Switcher {
                 },
                 State {
                     name: "3cols"
-                    when: dialogMainItem.maxCount == 5 || dialogMainItem.maxCount == 6 || dialogMainItem.maxCount == 9
+                    when: dialogMainItem.maxCount == 3 || dialogMainItem.maxCount == 5 || dialogMainItem.maxCount == 6 || dialogMainItem.maxCount == 9
                     PropertyChanges {
                         target: dialogMainItem
                         maxGridColumnsFromLayout: 3
