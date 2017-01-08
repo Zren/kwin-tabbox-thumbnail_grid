@@ -24,7 +24,9 @@ KWin.Switcher {
             property int maxWidth: tabBox.screenGeometry.width * 0.9
             property int maxHeight: tabBox.screenGeometry.height * 0.7
             property real screenFactor: tabBox.screenGeometry.width / tabBox.screenGeometry.height
-            property int maxGridColumns: Math.floor(maxWidth / thumbnailGridView.cellWidth)
+            property int maxGridColumnsByWidth: Math.floor(maxWidth / thumbnailGridView.cellWidth)
+            property int maxGridColumnsFromLayout: 1000 // Overwriten by state
+            property int maxGridColumns: Math.min(maxGridColumnsFromLayout, maxGridColumnsByWidth)
             property int gridColumns: Math.min(maxGridColumns, thumbnailGridView.count)
             property int gridRows: Math.ceil(thumbnailGridView.count / gridColumns)
             property int optimalWidth: thumbnailGridView.cellWidth * gridColumns
@@ -35,6 +37,52 @@ KWin.Switcher {
             height: Math.min(Math.max(thumbnailGridView.cellHeight, optimalHeight), maxHeight)
 
             clip: true
+
+            property int maxCount: thumbnailGridView.count
+            Connections {
+                target: dialog
+                onVisibleChanged: dialogMainItem.maxCount = thumbnailGridView.count
+            }
+            Connections {
+                target: thumbnailGridView
+                onCountChanged: dialogMainItem.maxCount = Math.max(dialogMainItem.maxCount, thumbnailGridView.count)
+            }
+            
+            // onStateChanged: console.log(state)
+            states: [
+                State {
+                    name: "other"
+                    when: 3 > dialogMainItem.maxCount || dialogMainItem.maxCount > 9
+                    PropertyChanges {
+                        target: dialogMainItem
+                        maxGridColumnsFromLayout: 1000
+                    }
+                },
+                State {
+                    name: "2cols"
+                    when: dialogMainItem.maxCount == 3 || dialogMainItem.maxCount == 4
+                    PropertyChanges {
+                        target: dialogMainItem
+                        maxGridColumnsFromLayout: 2
+                    }
+                },
+                State {
+                    name: "3cols"
+                    when: dialogMainItem.maxCount == 5 || dialogMainItem.maxCount == 6 || dialogMainItem.maxCount == 9
+                    PropertyChanges {
+                        target: dialogMainItem
+                        maxGridColumnsFromLayout: 3
+                    }
+                },
+                State {
+                    name: "4cols"
+                    when: dialogMainItem.maxCount == 7 || dialogMainItem.maxCount == 8
+                    PropertyChanges {
+                        target: dialogMainItem
+                        maxGridColumnsFromLayout: 4
+                    }
+                }
+            ]
 
             property bool mouseEnabled: false
             MouseArea {
