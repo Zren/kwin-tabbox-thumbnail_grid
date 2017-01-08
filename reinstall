@@ -1,7 +1,7 @@
 #!/bin/bash
 # Version 1
 
-rm -r /home/chris/.local/share/kwin/tabbox/thumbnail_grid/
+rm -r ~/.local/share/kwin/tabbox/thumbnail_grid/
 # plasmapkg2 -t windowswitcher -r package
 plasmapkg2 -t windowswitcher -i package
 
