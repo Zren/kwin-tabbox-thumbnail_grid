@@ -1,6 +1,6 @@
 # Thumbnail Grid
 
-Description
+https://store.kde.org/p/1153173/
 
 ## Screenshots
 
