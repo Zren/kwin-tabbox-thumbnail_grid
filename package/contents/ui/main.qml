@@ -65,7 +65,9 @@ KWin.Switcher {
                 var c = prevC - 1;
 
                 // don't increase vertical extent more than horizontal
-                if (prevC * prevC <= thumbnailGridView.count + prevDiff) {
+                // and don't exceed maxHeight
+                if (prevC * prevC <= thumbnailGridView.count + prevDiff ||
+                        maxHeight < Math.ceil(thumbnailGridView.count / c) * thumbnailGridView.cellHeight) {
                     return prevBestC;
                 }
                 var residue = thumbnailGridView.count % c;
