@@ -18,6 +18,14 @@ KWin.Switcher {
         x: tabBox.screenGeometry.x + tabBox.screenGeometry.width * 0.5 - dialogMainItem.width * 0.5
         y: tabBox.screenGeometry.y + tabBox.screenGeometry.height * 0.5 - dialogMainItem.height * 0.5
 
+        onVisibleChanged: {
+            if (visible) {
+                dialogMainItem.calculateColumnCount();
+            } else {
+                thumbnailGridView.highCount = 0;
+            }
+        }
+
         mainItem: Item {
             id: dialogMainItem
 
@@ -25,9 +33,8 @@ KWin.Switcher {
             property int maxHeight: tabBox.screenGeometry.height * 0.7
             property real screenFactor: tabBox.screenGeometry.width / tabBox.screenGeometry.height
             property int maxGridColumnsByWidth: Math.floor(maxWidth / thumbnailGridView.cellWidth)
-            property int maxGridColumnsFromLayout: 1000 // Overwriten by state
-            property int maxGridColumns: Math.min(maxGridColumnsFromLayout, maxGridColumnsByWidth)
-            property int gridColumns: Math.min(maxGridColumns, thumbnailGridView.count)
+
+            property int gridColumns: maxGridColumnsByWidth
             property int gridRows: Math.ceil(thumbnailGridView.count / gridColumns)
             property int optimalWidth: thumbnailGridView.cellWidth * gridColumns
             property int optimalHeight: thumbnailGridView.cellHeight * gridRows
@@ -38,51 +45,49 @@ KWin.Switcher {
 
             clip: true
 
-            property int maxCount: thumbnailGridView.count
-            Connections {
-                target: dialog
-                onVisibleChanged: dialogMainItem.maxCount = thumbnailGridView.count
-            }
-            Connections {
-                target: thumbnailGridView
-                onCountChanged: dialogMainItem.maxCount = Math.max(dialogMainItem.maxCount, thumbnailGridView.count)
-            }
-            
-            // onStateChanged: console.log(state)
-            states: [
-                State {
-                    name: "other"
-                    when: 3 > dialogMainItem.maxCount || dialogMainItem.maxCount > 9
-                    PropertyChanges {
-                        target: dialogMainItem
-                        maxGridColumnsFromLayout: 1000
-                    }
-                },
-                State {
-                    name: "2cols"
-                    when: dialogMainItem.maxCount == 4
-                    PropertyChanges {
-                        target: dialogMainItem
-                        maxGridColumnsFromLayout: 2
-                    }
-                },
-                State {
-                    name: "3cols"
-                    when: dialogMainItem.maxCount == 3 || dialogMainItem.maxCount == 5 || dialogMainItem.maxCount == 6 || dialogMainItem.maxCount == 9
-                    PropertyChanges {
-                        target: dialogMainItem
-                        maxGridColumnsFromLayout: 3
-                    }
-                },
-                State {
-                    name: "4cols"
-                    when: dialogMainItem.maxCount == 7 || dialogMainItem.maxCount == 8
-                    PropertyChanges {
-                        target: dialogMainItem
-                        maxGridColumnsFromLayout: 4
-                    }
+            // simple greedy algorithm
+            function calculateColumnCount() {
+                // respect screenGeometry
+                var c = Math.min(thumbnailGridView.count, maxGridColumnsByWidth);
+
+                var residue = thumbnailGridView.count % c;
+                if (residue == 0) {
+                    gridColumns = c;
+                    return;
                 }
-            ]
+
+                // start greedy recursion
+                gridColumns = columnCountRecursion(c, c, c - residue);
+            }
+
+            // step for greedy algorithm
+            function columnCountRecursion(prevC, prevBestC, prevDiff) {
+                var c = prevC - 1;
+
+                // don't increase vertical extent more than horizontal
+                // and don't exceed maxHeight
+                if (prevC * prevC <= thumbnailGridView.count + prevDiff ||
+                        maxHeight < Math.ceil(thumbnailGridView.count / c) * thumbnailGridView.cellHeight) {
+                    return prevBestC;
+                }
+                var residue = thumbnailGridView.count % c;
+                // halts algorithm at some point
+                if (residue == 0) {
+                    return c;
+                }
+                // empty slots
+                var diff = c - residue;
+
+                // compare it to previous count of empty slots
+                if (diff < prevDiff) {
+                    return columnCountRecursion(c, c, diff);
+                } else if (diff == prevDiff) {
+                    // when it's the same try again, we'll stop early enough thanks to the landscape mode condition
+                    return columnCountRecursion(c, prevBestC, diff);
+                }
+                // when we've found a local minimum choose this one (greedy)
+                return columnCountRecursion(c, prevBestC, diff);
+            }
 
             property bool mouseEnabled: false
             MouseArea {
@@ -113,6 +118,15 @@ KWin.Switcher {
                 cellWidth: hoverItem.margins.left + thumbnailWidth + hoverItem.margins.right
                 cellHeight: hoverItem.margins.top + captionRowHeight + thumbnailHeight + hoverItem.margins.bottom
                 height: cellHeight
+
+                // allow expansion on increasing count
+                property int highCount: 0
+                onCountChanged: {
+                    if (highCount < count) {
+                        dialogMainItem.calculateColumnCount();
+                        highCount = count;
+                    }
+                }
 
                 delegate: Item {
                     width: thumbnailGridView.cellWidth
