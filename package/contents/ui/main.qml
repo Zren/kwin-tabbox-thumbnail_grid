@@ -6,6 +6,9 @@ import org.kde.kquickcontrolsaddons 2.0
 import org.kde.kwin 2.0 as KWin
 
 // https://techbase.kde.org/Development/Tutorials/KWin/WindowSwitcher
+// https://github.com/KDE/kwin/blob/master/tabbox/switcheritem.h
+// https://github.com/KDE/kwin/blob/5baf75d11eda7ac4a3910a02544fd9cd64d9a2b2/tabbox/tabboxhandler.cpp#L230
+// https://github.com/KDE/kwin/blob/5baf75d11eda7ac4a3910a02544fd9cd64d9a2b2/tabbox/tabboxhandler.cpp#L325
 KWin.Switcher {
     id: tabBox
     currentIndex: thumbnailGridView.currentIndex
