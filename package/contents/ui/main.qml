@@ -32,6 +32,8 @@ KWin.Switcher {
         mainItem: Item {
             id: dialogMainItem
 
+            focus: true
+
             property int maxWidth: tabBox.screenGeometry.width * 0.9
             property int maxHeight: tabBox.screenGeometry.height * 0.7
             property real screenFactor: tabBox.screenGeometry.width / tabBox.screenGeometry.height
