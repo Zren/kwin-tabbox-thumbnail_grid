@@ -2,6 +2,7 @@
 
 * Fix focus so arrow keys work in Plasma 5.15+
 * Cleanup repo + scripts.
+* Fix anchor warning spam.
 
 ## v4 - January 9 2017
 
