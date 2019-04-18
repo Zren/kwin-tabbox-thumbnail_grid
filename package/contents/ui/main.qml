@@ -124,6 +124,9 @@ KWin.Switcher {
                 cellHeight: hoverItem.margins.top + captionRowHeight + thumbnailHeight + hoverItem.margins.bottom
                 height: cellHeight
 
+                keyNavigationWraps: true
+                highlightMoveDuration: 0
+
                 // allow expansion on increasing count
                 property int highCount: 0
                 onCountChanged: {
@@ -210,7 +213,6 @@ KWin.Switcher {
                     id: highlightItem
                     imagePath: "widgets/viewitem"
                     prefix: "hover"
-                    anchors.fill: thumbnailGridView.currentItem
                 }
 
                 // property int selectedIndex: -1
