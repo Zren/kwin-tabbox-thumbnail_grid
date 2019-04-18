@@ -230,7 +230,7 @@ KWin.Switcher {
             // This doesn't work, nor does keyboard input work on any other tabbox skin (KDE 5.7.4)
             // It does work in the preview however.
             Keys.onPressed: {
-                console.log('keyPressed', event.key)
+                // console.log('keyPressed', event.key)
                 if (event.key == Qt.Key_Left) {
                     thumbnailGridView.moveCurrentIndexLeft();
                 } else if (event.key == Qt.Key_Right) {
