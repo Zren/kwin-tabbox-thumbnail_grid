@@ -1,4 +1,4 @@
 #!/bin/bash
 # Version 1
 
-plasmapkg2 -t windowswitcher -i package
+kpackagetool5 -t KWin/WindowSwitcher -i package

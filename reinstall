@@ -2,8 +2,8 @@
 # Version 1
 
 rm -r ~/.local/share/kwin/tabbox/thumbnail_grid/
-# plasmapkg2 -t windowswitcher -r package
-plasmapkg2 -t windowswitcher -i package
+# kpackagetool5 -t KWin/WindowSwitcher -r package
+kpackagetool5 -t KWin/WindowSwitcher -i package
 
 # Tell KWin to reload the task switcher.
 # https://github.com/KDE/kwin/blob/master/kcmkwin/kwintabbox/main.cpp#L375
