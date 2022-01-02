@@ -1,8 +1,11 @@
 /*
- KWin - the KDE window manager
- This file is part of the KDE project.
+ This file was taken from the KDE project.
 
+ Project idea and initial maintainer:
  SPDX-FileCopyrightText: 2020 Chris Holland <zrenfire@gmail.com>
+
+ Fork maintainer:
+ SPDX-FileCopyrightText: 2022 Ruslan Mikheev <elan@sestudio.org>
 
  SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -15,7 +18,7 @@ import org.kde.kquickcontrolsaddons 2.0
 import org.kde.kwin 2.0 as KWin
 
 // https://techbase.kde.org/Development/Tutorials/KWin/WindowSwitcher
-// https://github.com/KDE/kwin/blob/master/tabbox/switcheritem.h
+// https://invent.kde.org/plasma/kwin/-/blob/ca7298a3254b53a895d83fe9f488235399e2cee2/src/tabbox/switcheritem.h
 KWin.Switcher {
     id: tabBox
     currentIndex: thumbnailGridView.currentIndex
@@ -125,6 +128,8 @@ KWin.Switcher {
                 keyNavigationWraps: true
                 highlightMoveDuration: 0
 
+                property bool isLockedOnItem: false
+
                 // Allow expansion on increasing count
                 property int highCount: 0
                 onCountChanged: {
@@ -141,9 +146,16 @@ KWin.Switcher {
 
                     MouseArea {
                         anchors.fill: parent
+                        hoverEnabled: true
                         onClicked: {
                             thumbnailGridItem.select();
+                            thumbnailGridView.isLockedOnItem = true
                         }
+                        // Prevent accidental selection if mouse is not being used
+                        onPositionChanged: {
+                            onEntered: !thumbnailGridView.isLockedOnItem && thumbnailGridItem.select();
+                        }
+                        
                     }
                     function select() {
                         thumbnailGridView.currentIndex = index;
@@ -215,6 +227,7 @@ KWin.Switcher {
                 Connections {
                     target: tabBox
                     function onCurrentIndexChanged() {
+                        thumbnailGridView.isLockedOnItem = false;
                         thumbnailGridView.currentIndex = tabBox.currentIndex;
                     }
                 }
