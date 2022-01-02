@@ -1,14 +1,21 @@
+/*
+ KWin - the KDE window manager
+ This file is part of the KDE project.
+
+ SPDX-FileCopyrightText: 2020 Chris Holland <zrenfire@gmail.com>
+
+ SPDX-License-Identifier: GPL-2.0-or-later
+ */
+
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 2.0 as PlasmaComponents
+import org.kde.plasma.components 3.0 as PlasmaComponents3
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.kwin 2.0 as KWin
 
 // https://techbase.kde.org/Development/Tutorials/KWin/WindowSwitcher
 // https://github.com/KDE/kwin/blob/master/tabbox/switcheritem.h
-// https://github.com/KDE/kwin/blob/5baf75d11eda7ac4a3910a02544fd9cd64d9a2b2/tabbox/tabboxhandler.cpp#L230
-// https://github.com/KDE/kwin/blob/5baf75d11eda7ac4a3910a02544fd9cd64d9a2b2/tabbox/tabboxhandler.cpp#L325
 KWin.Switcher {
     id: tabBox
     currentIndex: thumbnailGridView.currentIndex
@@ -50,12 +57,12 @@ KWin.Switcher {
 
             clip: true
 
-            // simple greedy algorithm
+            // Simple greedy algorithm
             function calculateColumnCount() {
                 // respect screenGeometry
-                var c = Math.min(thumbnailGridView.count, maxGridColumnsByWidth);
+                const c = Math.min(thumbnailGridView.count, maxGridColumnsByWidth);
 
-                var residue = thumbnailGridView.count % c;
+                const residue = thumbnailGridView.count % c;
                 if (residue == 0) {
                     gridColumns = c;
                     return;
@@ -65,9 +72,9 @@ KWin.Switcher {
                 gridColumns = columnCountRecursion(c, c, c - residue);
             }
 
-            // step for greedy algorithm
+            // Step for greedy algorithm
             function columnCountRecursion(prevC, prevBestC, prevDiff) {
-                var c = prevC - 1;
+                const c = prevC - 1;
 
                 // don't increase vertical extent more than horizontal
                 // and don't exceed maxHeight
@@ -75,13 +82,13 @@ KWin.Switcher {
                         maxHeight < Math.ceil(thumbnailGridView.count / c) * thumbnailGridView.cellHeight) {
                     return prevBestC;
                 }
-                var residue = thumbnailGridView.count % c;
+                const residue = thumbnailGridView.count % c;
                 // halts algorithm at some point
                 if (residue == 0) {
                     return c;
                 }
                 // empty slots
-                var diff = c - residue;
+                const diff = c - residue;
 
                 // compare it to previous count of empty slots
                 if (diff < prevDiff) {
@@ -94,15 +101,7 @@ KWin.Switcher {
                 return columnCountRecursion(c, prevBestC, diff);
             }
 
-            property bool mouseEnabled: false
-            MouseArea {
-                id: mouseDetector
-                anchors.fill: parent
-                hoverEnabled: true
-                onPositionChanged: dialogMainItem.mouseEnabled = true
-            }
-
-            // just to get the margin sizes
+            // Just to get the margin sizes
             PlasmaCore.FrameSvgItem {
                 id: hoverItem
                 imagePath: "widgets/viewitem"
@@ -112,22 +111,21 @@ KWin.Switcher {
 
             GridView {
                 id: thumbnailGridView
-                model: tabBox.model
-                // interactive: false // Disable drag to scroll
-
                 anchors.fill: parent
 
-                property int captionRowHeight: 22
-                property int thumbnailWidth: 300
+                model: tabBox.model
+
+                property int iconSize: PlasmaCore.Units.iconSizes.smallMedium
+                property int captionRowHeight: 30 * PlasmaCore.Units.devicePixelRatio // The close button is 30x30 in Breeze
+                property int thumbnailWidth: 300 * PlasmaCore.Units.devicePixelRatio
                 property int thumbnailHeight: thumbnailWidth * (1.0/dialogMainItem.screenFactor)
                 cellWidth: hoverItem.margins.left + thumbnailWidth + hoverItem.margins.right
                 cellHeight: hoverItem.margins.top + captionRowHeight + thumbnailHeight + hoverItem.margins.bottom
-                height: cellHeight
 
                 keyNavigationWraps: true
                 highlightMoveDuration: 0
 
-                // allow expansion on increasing count
+                // Allow expansion on increasing count
                 property int highCount: 0
                 onCountChanged: {
                     if (highCount < count) {
@@ -137,16 +135,14 @@ KWin.Switcher {
                 }
 
                 delegate: Item {
+                    id: thumbnailGridItem
                     width: thumbnailGridView.cellWidth
                     height: thumbnailGridView.cellHeight
 
                     MouseArea {
                         anchors.fill: parent
-                        // hoverEnabled: dialogMainItem.mouseEnabled
-                        // onEntered: parent.hover()
                         onClicked: {
-                            parent.select()
-                            // dialog.close() // Doesn't end the effects until you release Alt.
+                            thumbnailGridItem.select();
                         }
                     }
                     function select() {
@@ -154,8 +150,9 @@ KWin.Switcher {
                         thumbnailGridView.currentIndexChanged(thumbnailGridView.currentIndex);
                     }
 
-                    Item {
+                    ColumnLayout {
                         z: 0
+                        spacing: 0
                         anchors.fill: parent
                         anchors.leftMargin: hoverItem.margins.left
                         anchors.topMargin: hoverItem.margins.top
@@ -164,47 +161,47 @@ KWin.Switcher {
 
                         RowLayout {
                             id: captionRow
-                            anchors.left: parent.left
-                            anchors.top: parent.top
-                            anchors.right: parent.right
-                            height: thumbnailGridView.captionRowHeight
-                            spacing: 4
+                            spacing: PlasmaCore.Units.smallSpacing
 
                             QIconItem {
                                 id: iconItem
-                                // source: model.icon
+                                Layout.minimumHeight: thumbnailGridView.iconSize
+                                Layout.minimumWidth: thumbnailGridView.iconSize
+                                Layout.maximumHeight: Layout.minimumHeight
+                                Layout.maximumWidth: Layout.minimumWidth
                                 icon: model.icon
-                                width: parent.height
-                                height: parent.height
                                 state: index == thumbnailGridView.currentIndex ? QIconItem.ActiveState : QIconItem.DefaultState
                             }
 
-                            PlasmaComponents.Label {
-                                text: model.caption
-                                height: parent.height
-                                // width: parent.width - captionRow.spacing - iconItem.width
+                            PlasmaComponents3.Label {
+                                id: label
                                 Layout.fillWidth: true
+                                text: model.caption
                                 elide: Text.ElideRight
                             }
 
-                            PlasmaComponents.ToolButton {
+                            PlasmaComponents3.ToolButton {
+                                id: closeButton
                                 visible: model.closeable && typeof tabBox.model.close !== 'undefined' || false
-                                iconSource: 'window-close-symbolic'
+                                icon.name: 'window-close-symbolic'
                                 onClicked: {
-                                    tabBox.model.close(index)
+                                    tabBox.model.close(index);
                                 }
                             }
                         }
 
-                        // Cannot draw icon on top of thumbnail.
-                        KWin.ThumbnailItem {
-                            wId: windowId
-                            // clip: true
-                            // clipTo: thumbnailGridView
-                            clip: true
-                            clipTo: parent
-                            anchors.fill: parent
-                            anchors.topMargin: captionRow.height
+                        // KWin.ThumbnailItem needs a container
+                        // otherwise it will be drawn the same size as the parent ColumnLayout
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            // Cannot draw anything (like an icon) on top of thumbnail
+                            KWin.ThumbnailItem {
+                                id: thumbnailItem
+                                anchors.fill: parent
+                                wId: windowId
+                            }
                         }
                     }
                 } // GridView.delegate
@@ -215,24 +212,15 @@ KWin.Switcher {
                     prefix: "hover"
                 }
 
-                // property int selectedIndex: -1
                 Connections {
                     target: tabBox
-                    onCurrentIndexChanged: {
-                        thumbnailGridView.currentIndex = tabBox.currentIndex
+                    function onCurrentIndexChanged() {
+                        thumbnailGridView.currentIndex = tabBox.currentIndex;
                     }
                 }
-
-                // keyNavigationEnabled: true // Requires: Qt 5.7 and QtQuick 2.? (2.7 didn't work).
-                // keyNavigationWraps: true // Requires: Qt 5.7 and QtQuick 2.? (2.7 didn't work).
-
             } // GridView
 
-            
-            // This doesn't work, nor does keyboard input work on any other tabbox skin (KDE 5.7.4)
-            // It does work in the preview however.
             Keys.onPressed: {
-                // console.log('keyPressed', event.key)
                 if (event.key == Qt.Key_Left) {
                     thumbnailGridView.moveCurrentIndexLeft();
                 } else if (event.key == Qt.Key_Right) {
