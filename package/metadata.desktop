@@ -12,6 +12,6 @@ Icon=preferences-system-windows-switcher-big-icons
 X-KDE-PluginInfo-Author=Ruslan Mikheev
 X-KDE-PluginInfo-Email=elan@sestudio.org
 X-KDE-PluginInfo-Name=thumbnail_grid_alternative
-X-KDE-PluginInfo-Version=5
+X-KDE-PluginInfo-Version=1.0
 X-KDE-PluginInfo-Website=https://github.com/Elandig/thumbnail-gird-alternative
 X-KDE-PluginInfo-Depends=
