@@ -5,10 +5,6 @@ Fork of [Zren](https://github.com/Zren)'s [Thumbnail Grid](https://invent.kde.or
 ## But.. why?
 It just fits my workflow better and I found no Plasma 5-compatible alternatives at the time.
 
-## Installation
-
-
-
 ## Screenshots
 
 ![](https://i.imgur.com/85g0Gfv.png)
