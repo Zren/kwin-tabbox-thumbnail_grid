@@ -1,5 +1,5 @@
 /*
- This file was taken from the KDE project.
+ This file was taken from the KDE project. https://invent.kde.org/plasma/kdeplasma-addons/-/tree/master/windowswitchers/thumbnail_grid
 
  Project idea and initial maintainer:
  SPDX-FileCopyrightText: 2020 Chris Holland <zrenfire@gmail.com>
