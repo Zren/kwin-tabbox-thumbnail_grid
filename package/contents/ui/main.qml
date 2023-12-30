@@ -5,7 +5,7 @@
  SPDX-FileCopyrightText: 2020 Chris Holland <zrenfire@gmail.com>
 
  Fork maintainer:
- SPDX-FileCopyrightText: 2022 Ruslan Mikheev <elan@sestudio.org>
+ SPDX-FileCopyrightText: 2022 Elandig <elan@sestudio.org>
 
  SPDX-License-Identifier: GPL-2.0-or-later
  */
