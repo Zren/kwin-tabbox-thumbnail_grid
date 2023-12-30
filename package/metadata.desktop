@@ -9,7 +9,7 @@ X-Plasma-API=declarativeappletscript
 X-Plasma-MainScript=ui/main.qml
 
 Icon=preferences-system-windows-switcher-big-icons
-X-KDE-PluginInfo-Author=Ruslan Mikheev
+X-KDE-PluginInfo-Author=Elandig
 X-KDE-PluginInfo-Email=elan@sestudio.org
 X-KDE-PluginInfo-Name=thumbnail_grid_alternative
 X-KDE-PluginInfo-Version=1.0
